@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { save } from '@tauri-apps/plugin-dialog';
 import { settings } from '../stores/settings.svelte.js';
 import { tabManager } from '../stores/tabs.svelte.js';
 import { hasMarkdownLinkExtension } from '../utils/markdownLinks.js';
@@ -24,6 +25,8 @@ type DocumentSessionOptions = {
 	isScrolling: () => boolean;
 	renderRichContent: () => void;
 	onError: (message: string, error: unknown) => void;
+	markSelfWrite: (path: string) => void;
+	clearSelfWrite: (path: string) => void;
 };
 
 export function createDocumentSession(options: DocumentSessionOptions) {
@@ -127,5 +130,67 @@ export function createDocumentSession(options: DocumentSessionOptions) {
 		}
 	}
 
-	return { loadMarkdown };
+	async function saveContent(tabId?: string): Promise<boolean> {
+		const tab = tabId ? tabManager.tabs.find((item) => item.id === tabId) : tabManager.activeTab;
+		if (!tab) return false;
+		let targetPath = tab.path;
+		if (!targetPath) {
+			const selected = await save({
+				filters: [
+					{ name: 'Markdown', extensions: ['md'] },
+					{ name: 'All Files', extensions: ['*'] },
+				],
+				defaultPath: tab.title,
+			});
+			if (!selected) return false;
+			targetPath = selected;
+		}
+		const snapshot = tab.rawContent;
+		options.markSelfWrite(targetPath);
+		try {
+			await invoke('save_file_content', { path: targetPath, content: snapshot });
+			options.markSelfWrite(targetPath);
+			if (tab.path === '') {
+				tabManager.updateTabPath(tab.id, targetPath);
+				options.saveRecentFile(targetPath);
+			}
+			tab.originalContent = snapshot;
+			tab.isDirty = tab.rawContent !== snapshot;
+			return true;
+		} catch (error) {
+			options.clearSelfWrite(targetPath);
+			options.onError('Failed to save file', error);
+			return false;
+		}
+	}
+
+	async function saveContentAs(): Promise<boolean> {
+		const tab = tabManager.activeTab;
+		if (!tab) return false;
+		const selected = await save({
+			filters: [
+				{ name: 'Markdown', extensions: ['md'] },
+				{ name: 'All Files', extensions: ['*'] },
+			],
+			defaultPath: tab.path || undefined,
+		});
+		if (!selected) return false;
+		const snapshot = tab.rawContent;
+		options.markSelfWrite(selected);
+		try {
+			await invoke('save_file_content', { path: selected, content: snapshot });
+			options.markSelfWrite(selected);
+			tabManager.updateTabPath(tab.id, selected);
+			options.saveRecentFile(selected);
+			tab.originalContent = snapshot;
+			tab.isDirty = tab.rawContent !== snapshot;
+			return true;
+		} catch (error) {
+			options.clearSelfWrite(selected);
+			options.onError('Failed to save file as', error);
+			return false;
+		}
+	}
+
+	return { loadMarkdown, saveContent, saveContentAs };
 }
