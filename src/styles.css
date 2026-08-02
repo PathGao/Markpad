@@ -1382,7 +1382,7 @@ body {
 /* print styles for pdf export */
 @media print {
 	@page {
-		margin: 0.75in;
+		margin: 0;
 		size: auto;
 	}
 
@@ -1445,14 +1445,19 @@ body {
 	}
 
 	.markdown-body {
-		padding: 0 !important;
+		padding: 0.75in !important;
 		margin: 0 !important;
+		box-sizing: border-box !important;
+		box-decoration-break: clone !important;
+		-webkit-box-decoration-break: clone !important;
 		overflow: visible !important;
 		height: auto !important;
 		min-height: auto !important;
 		max-width: 100% !important;
 		color: #000 !important;
 		background: white !important;
+		print-color-adjust: exact !important;
+		-webkit-print-color-adjust: exact !important;
 		position: static !important;
 	}
 
@@ -1464,15 +1469,20 @@ body {
 		overflow: visible !important;
 	}
 
-	/* Paper has no horizontal scrollbar, so restore the fixed table-layout for
-	   export: wide tables wrap to fit the page width instead of being clipped
-	   by the on-screen `display: block; overflow-x: auto` scroll container. */
+	/* Paper has no horizontal scrollbar. Let the browser distribute columns from
+	   their content so wide tables wrap at words instead of one glyph at a time. */
 	.markdown-body table {
 		display: table !important;
-		table-layout: fixed !important;
+		table-layout: auto !important;
 		width: 100% !important;
 		max-width: 100% !important;
 		overflow: visible !important;
+	}
+
+	.markdown-body table th,
+	.markdown-body table td {
+		overflow-wrap: break-word !important;
+		word-break: normal !important;
 	}
 
 	.markdown-body p,
@@ -1493,12 +1503,53 @@ body {
 
 	.markdown-body pre,
 	.markdown-body blockquote,
+	.markdown-body .markdown-alert,
 	.markdown-body table,
 	.markdown-body figure,
 	.markdown-body img,
 	.markdown-body .mermaid-diagram,
 	.markdown-body .katex-display {
 		break-inside: avoid;
+	}
+
+	.markdown-body .markdown-alert {
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+		box-decoration-break: clone !important;
+		-webkit-box-decoration-break: clone !important;
+	}
+
+	.markdown-body details.markdown-alert {
+		page-break-inside: avoid !important;
+		break-inside: avoid !important;
+	}
+
+	.markdown-body tr {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	/* Diagrams are re-rendered with Mermaid's light theme before an
+	   export (see utils/mermaidPrint.ts), so the printed SVG already
+	   carries paper colours and needs no overrides here. Recolouring
+	   Mermaid's output from CSS meant enumerating its internal class
+	   names, which differ per diagram type and change between
+	   releases. */
+
+	.markdown-body .frontmatter-panel,
+	.markdown-body .frontmatter-summary {
+		box-sizing: border-box !important;
+		max-width: 100% !important;
+	}
+
+	.markdown-body .frontmatter-title {
+		min-width: 0 !important;
+		overflow: hidden !important;
+		text-overflow: ellipsis !important;
+	}
+
+	.markdown-body .frontmatter-count {
+		flex-shrink: 0 !important;
 	}
 
 	/* Keep screen chrome out of the export while giving the document its own

@@ -59,3 +59,38 @@ test('print layout gives document content paper-specific rhythm and boundaries',
 	assert.match(printStyles, /\.markdown-body img\s*\{[\s\S]*?max-width:\s*100%\s*!important;/);
 	assert.match(printStyles, /\.markdown-body table\s*\{[\s\S]*?margin:\s*1em 0;/);
 });
+
+test('print layout paints a theme-independent page and keeps Markdown alerts intact', () => {
+	const printStyles = styles.slice(styles.indexOf('@media print {'));
+	const viewerPrintStyles = viewer.slice(viewer.indexOf('\t@media print {'));
+
+	assert.match(printStyles, /@page\s*\{[\s\S]*?margin:\s*0;/);
+	assert.match(printStyles, /\.markdown-body\s*\{[\s\S]*?box-sizing:\s*border-box\s*!important;/);
+	assert.match(printStyles, /\.markdown-body\s*\{[\s\S]*?padding:\s*0\.75in\s*!important;/);
+	assert.match(printStyles, /\.markdown-body\s*\{[\s\S]*?box-decoration-break:\s*clone\s*!important;/);
+	assert.match(printStyles, /\.markdown-body\s*\{[\s\S]*?-webkit-box-decoration-break:\s*clone\s*!important;/);
+	assert.match(printStyles, /\.markdown-body\s*\{[\s\S]*?print-color-adjust:\s*exact\s*!important;/);
+	assert.match(
+		printStyles,
+		/\.markdown-body \.markdown-alert\s*\{[\s\S]*?page-break-inside:\s*avoid\s*!important;[\s\S]*?break-inside:\s*avoid\s*!important;/,
+	);
+	assert.match(printStyles, /\.markdown-body \.markdown-alert\s*\{[\s\S]*?box-decoration-break:\s*clone\s*!important;/);
+	assert.match(printStyles, /\.markdown-body details\.markdown-alert\s*\{[\s\S]*?break-inside:\s*avoid\s*!important;/);
+	assert.match(printStyles, /\.markdown-body tr\s*\{[\s\S]*?break-inside:\s*avoid;/);
+	assert.doesNotMatch(viewerPrintStyles, /\.markdown-body\s*\{[\s\S]*?padding:\s*0\s*!important;/);
+});
+
+test('print layout keeps wide metadata tables readable', () => {
+	const printStyles = styles.slice(styles.indexOf('@media print {'));
+
+	// Diagram colours are no longer patched from CSS — the export re-renders
+	// them with Mermaid's light theme instead (see utils/mermaidPrint.ts).
+	// Recolouring by class name silently half-applied: sequence-diagram
+	// actors have no `.node` ancestor, so their fill rule missed while the
+	// label rule landed, leaving dark text on a near-black box.
+	assert.doesNotMatch(printStyles, /\.mermaid-diagram svg[^{]*\{[^}]*fill:/);
+	assert.match(printStyles, /\.markdown-body table\s*\{[\s\S]*?table-layout:\s*auto\s*!important;/);
+	assert.match(printStyles, /\.markdown-body table th,[\s\S]*?overflow-wrap:\s*break-word\s*!important;/);
+	assert.match(printStyles, /\.markdown-body \.frontmatter-summary\s*\{[\s\S]*?box-sizing:\s*border-box\s*!important;/);
+	assert.match(printStyles, /\.markdown-body \.frontmatter-title\s*\{[\s\S]*?min-width:\s*0\s*!important;/);
+});
