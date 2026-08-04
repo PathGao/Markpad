@@ -7,14 +7,14 @@
     <authors>alecdotdev</authors>
     <description>The Notepad equivalent for Markdown</description>
     <tags>markdown viewer tauri sveltekit editor notepad text-editor</tags>
-    <projectUrl>https://github.com/alecdotdev/markpad</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/alecdotdev/markpad/master/src-tauri/icons/128x128.png</iconUrl>
-    <licenseUrl>https://github.com/alecdotdev/markpad/blob/master/LICENSE</licenseUrl>
-    <packageSourceUrl>https://github.com/alecdotdev/markpad/tree/master/packaging/choco</packageSourceUrl>
-    <releaseNotes>https://github.com/alecdotdev/markpad/releases</releaseNotes>
+    <projectUrl>https://github.com/sftwrdotdev/markpad</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/sftwrdotdev/markpad/master/src-tauri/icons/128x128.png</iconUrl>
+    <licenseUrl>https://github.com/sftwrdotdev/markpad/blob/master/LICENSE</licenseUrl>
+    <packageSourceUrl>https://github.com/sftwrdotdev/markpad/tree/master/packaging/choco</packageSourceUrl>
+    <releaseNotes>https://github.com/sftwrdotdev/markpad/releases</releaseNotes>
     <summary>A fast and lightweight Markdown viewer and editor</summary>
-    <projectSourceUrl>https://github.com/alecdotdev/markpad</projectSourceUrl>
-    <bugTrackerUrl>https://github.com/alecdotdev/markpad/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/sftwrdotdev/markpad</projectSourceUrl>
+    <bugTrackerUrl>https://github.com/sftwrdotdev/markpad/issues</bugTrackerUrl>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

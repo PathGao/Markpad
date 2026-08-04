@@ -3,7 +3,7 @@ VERIFICATION
 The Markpad executable in this Chocolatey package was built automatically from
 source code using GitHub Actions.
 
-Source Repository: https://github.com/alecdotdev/markpad
+Source Repository: https://github.com/sftwrdotdev/markpad
 
 The build process produces `Markpad.exe` via `npm run tauri build`, which is
 then copied directly into the `tools` folder of this package. The process is fully

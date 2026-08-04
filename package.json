@@ -1,6 +1,6 @@
 {
 	"name": "markpad",
-	"version": "2.6.14",
+	"version": "2.7.0",
 	"description": "The Notepad equivalent for Markdown",
 	"type": "module",
 	"scripts": {
