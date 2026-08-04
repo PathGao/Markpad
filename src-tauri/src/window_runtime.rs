@@ -280,12 +280,14 @@ pub fn list_viewer_windows(state: State<'_, AppState>) -> Vec<WindowListEntry> {
 
 pub fn offer_tab_to_window(
     app: AppHandle,
+    broker: State<'_, crate::tab_transfer::TabTransferBroker>,
     target_label: String,
     token: String,
 ) -> Result<(), String> {
     if app.get_webview_window(&target_label).is_none() {
         return Err(format!("no such window: {target_label}"));
     }
+    broker.set_target_label(&token, target_label.clone())?;
     app.emit_to(target_label.as_str(), "tab-transfer-offer", token)
         .map_err(|error| error.to_string())
 }
@@ -410,9 +412,10 @@ pub fn create_transfer_window(app: AppHandle, token: String) -> Result<(), Strin
     }
     #[cfg(not(target_os = "macos"))]
     {
-        builder = builder.decorations(false).shadow(false);
+        builder = builder.decorations(false);
     }
-    builder.build().map_err(|e| e.to_string())?;
+    let window = builder.build().map_err(|e| e.to_string())?;
+    let _ = window.set_shadow(true);
     Ok(())
 }
 
