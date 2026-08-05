@@ -3,11 +3,11 @@
   <h1>Markpad</h1>
   <p><b>The Notepad equivalent for Markdown</b></p>
   
-  [![GitHub Release](https://img.shields.io/github/v/release/alecdotdev/Markpad?style=flat-square)](https://github.com/alecdotdev/Markpad/releases/latest)
+  [![GitHub Release](https://img.shields.io/github/v/release/sftwrdotdev/Markpad?style=flat-square)](https://github.com/sftwrdotdev/Markpad/releases/latest)
 
   <p>A lightweight, minimalist Markdown viewer and text editor built for productivity across Windows, macOS, and Linux.</p>
 
-  <a href="https://markpad.dev">Website</a> // <a href="https://github.com/alecdotdev/Markpad/releases/latest">Download Latest Release</a> // <a href="https://github.com/alecdotdev/Markpad/issues">Report a Bug</a>
+  <a href="https://markpad.dev">Website</a> // <a href="https://github.com/sftwrdotdev/Markpad/releases/latest">Download Latest Release</a> // <a href="https://github.com/sftwrdotdev/Markpad/issues">Report a Bug</a>
 </div>
 
 <br />
@@ -16,13 +16,17 @@
 ## Features
 
 - Tabbed interface
-- Monaco editor (VS Code)
+- Multi-window support
+- Window tags and pinned sessions
+- Monaco editor (like VS Code)
 - Split view
+- Customizable toolbar and title bar icons
+- Multi-language support
 - Syntax highlighting both in editor and code blocks
 - Math equation support (KaTeX)
 - Mermaid diagram support
 - Vim mode
-- Auto-reload
+- Auto-reload from disk
 - Zen mode
 - Table of contents
 - Configurable default mode for new files (editor or preview)
@@ -30,7 +34,7 @@
 - Paste images into editor
 - Custom typography and font settings
 - Content zooming
-- Image and YouTube embeds
+- Image embeds
 - PDF and HTML export
 - Familiar GitHub styled markdown rendering
 - Tiny memory usage (~10MB)
@@ -59,14 +63,13 @@ sudo snap install markpad
 
 Download the latest executable or installer from the [releases page](https://github.com/alecdotdev/Markpad/releases/latest) or from [markpad.sftwr.dev](https://markpad.sftwr.dev)
 
-> After a direct `.dmg` (macOS), `*-setup.exe` (Windows NSIS) or `.AppImage` (Linux) install, Markpad self-updates from GitHub releases via the in-app *Check for Updates…* entry (macOS app menu, or Settings elsewhere). Snap, Chocolatey, `.deb` and `.rpm` users continue to update through their distribution channels. See [RELEASING.md](RELEASING.md) if you maintain Markpad releases.
+> After a direct `.dmg` (macOS), `*-setup.exe` (Windows NSIS) or `.AppImage` (Linux) install, Markpad self-updates from GitHub releases via the in-app *Check for Updates…* entry (macOS app menu, or Settings elsewhere). Snap, Chocolatey, `.deb` and `.rpm` users continue to update through their distribution channels.
 
 ## Installation from source
 
 - Clone the repository
 - Run `npm install` to install dependencies
 - Run `npm run tauri build` to build the executable 
-- [Optional] Rename to `MarkpadInstaller.exe` to run as installer
 
 ### Isolated macOS test bundle
 
@@ -98,6 +101,8 @@ Please ensure your code follows the existing style and that you add descriptions
 
 #### Split view
 ![split view](pics/splitview.png)
+#### Editor toolbar
+![editor toolbar](pics/2.7.0/editor-toolbar.png)
 #### Home page
 ![home page](pics/home.png)
 #### Split view minimal
@@ -107,14 +112,16 @@ Please ensure your code follows the existing style and that you add descriptions
 #### Light mode
 ![light mode](pics/lightmode.png)
 #### Settings
-![settings](pics/settings.png)
+![settings](pics/2.7.0/editor-settings.png)
 #### Zen mode
 ![zen mode](pics/zenmode-view.png)
 #### Theme settings
 ![theme setting](pics/theme-setting.png)
-#### Table of contents
-![toc](pics/toc.png)
+#### Table of Contents
+![table of contents](pics/2.7.0/floating-toc.png)
 #### Theme example
 ![theme example](pics/theme-example.png)
+#### Window tag
+![window tag](pics/2.7.0/window-tag.png)
 #### Drag and drop
 ![drag and drop](pics/drag-and-drop.png)
