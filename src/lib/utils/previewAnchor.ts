@@ -36,6 +36,7 @@ export type LineRange = {
  */
 export type AnchorNode = {
 	readonly nodeType: number;
+	readonly tagName?: string;
 	readonly childNodes: Iterable<AnchorNode>;
 	getAttribute?(name: string): string | null;
 	readonly classList?: { contains(token: string): boolean };
@@ -46,6 +47,19 @@ export type AnchorMatch = LineRange & {
 };
 
 const ELEMENT_NODE = 1;
+
+/**
+ * Elements comrak stamps with a `data-sourcepos` that generate no CSS box the
+ * `offsetTop` / `offsetHeight` API can report. `render.hardbreaks` is on, so
+ * every soft-wrapped line of prose ends in one of these, and resolving an
+ * anchor to one hands the restore `offsetTop = 0, offsetHeight = 0` — which
+ * scrolls the preview to the top of the document instead of to the line.
+ */
+const BOXLESS_TAGS = new Set(['BR', 'WBR']);
+
+function isAnchorable(node: AnchorNode): boolean {
+	return !BOXLESS_TAGS.has(node.tagName ?? '');
+}
 
 /**
  * Distance from the top of the viewport at which the anchor line is pinned.
@@ -68,7 +82,7 @@ export function parseSourceposLineRange(sourcepos: string | null | undefined): L
 function elementChildren(node: AnchorNode): AnchorNode[] {
 	const out: AnchorNode[] = [];
 	for (const child of node.childNodes) {
-		if (child.nodeType === ELEMENT_NODE) out.push(child);
+		if (child.nodeType === ELEMENT_NODE && isAnchorable(child)) out.push(child);
 	}
 	return out;
 }
