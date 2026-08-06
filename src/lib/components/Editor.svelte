@@ -6,6 +6,7 @@
 	import { MARKDOWN_LANGUAGE_ID, shouldLinkifyPastedUrl } from '../utils/pasteContext.js';
 	import { toggleLineMarker, type LineMarkerToolId } from '../utils/editorToolbar.js';
 	import { getTabModel, tabModelUri } from '../utils/tabModels.js';
+	import { installVimScrollCommands } from '../utils/vimScrollCommands.js';
 	import {
 		getLineAtVerticalOffset,
 		getScrollSyncPositionFromPixels,
@@ -1435,7 +1436,12 @@
 			let vim: { dispose: () => void } | null = null;
 			const currentEditor = editor;
 			const currentStatusNode = vimStatusNode;
-			import("monaco-vim").then(({ initVimMode }) => {
+			import("monaco-vim").then(({ initVimMode, VimMode }) => {
+				// Before the adapter is attached, and unconditionally: it patches
+				// monaco-vim's own module-level command tables, which outlive this
+				// effect, and it is idempotent. See vimScrollCommands.ts for what
+				// 0.4.4 does to `zz`, `zt`, `zb`, `z.`, `z-` and `z<CR>` (#104).
+				installVimScrollCommands(VimMode);
 				if (disposed) return;
 				vim = initVimMode(currentEditor, currentStatusNode);
 			});
