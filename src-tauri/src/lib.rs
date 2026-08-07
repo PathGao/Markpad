@@ -548,93 +548,6 @@ mod tab_transfer;
 mod window_runtime;
 use window_runtime::{AppState, WatcherState};
 
-#[tauri::command]
-async fn show_window(window: tauri::Window) {
-    window_runtime::show_window(window).await;
-}
-
-#[tauri::command]
-fn save_window_state(app: AppHandle, json: String) -> Result<(), String> {
-    window_runtime::save_window_state(app, json)
-}
-
-#[tauri::command]
-fn load_window_state(app: AppHandle) -> Option<String> {
-    window_runtime::load_window_state(app)
-}
-
-#[tauri::command]
-fn clear_window_state(app: AppHandle) -> Result<(), String> {
-    window_runtime::clear_window_state(app)
-}
-
-#[tauri::command]
-fn save_restore_progress(app: AppHandle, json: String) -> Result<(), String> {
-    window_runtime::save_restore_progress(app, json)
-}
-
-#[tauri::command]
-fn load_restore_progress(app: AppHandle) -> Option<String> {
-    window_runtime::load_restore_progress(app)
-}
-
-#[tauri::command]
-fn clear_restore_progress(app: AppHandle) -> Result<(), String> {
-    window_runtime::clear_restore_progress(app)
-}
-
-#[tauri::command]
-fn set_window_meta(
-    window: tauri::Window,
-    state: State<'_, AppState>,
-    tag_name: Option<String>,
-    tag_color: Option<String>,
-    active_tab_title: String,
-    tab_count: usize,
-) {
-    window_runtime::set_window_meta(window, state, tag_name, tag_color, active_tab_title, tab_count)
-}
-
-#[tauri::command]
-fn list_viewer_windows(state: State<'_, AppState>) -> Vec<window_runtime::WindowListEntry> {
-    window_runtime::list_viewer_windows(state)
-}
-
-#[tauri::command]
-fn is_window_tag_taken(window: tauri::Window, state: State<'_, AppState>, name: String) -> bool {
-    window_runtime::is_window_tag_taken(window, state, name)
-}
-
-#[tauri::command]
-fn offer_tab_to_window(
-    app: AppHandle,
-    state: State<'_, tab_transfer::TabTransferBroker>,
-    target_label: String,
-    token: String,
-) -> Result<(), String> {
-    window_runtime::offer_tab_to_window(app, state, target_label, token)
-}
-
-#[tauri::command]
-fn focus_window(app: AppHandle, label: String) -> Result<(), String> {
-    window_runtime::focus_window(app, label)
-}
-
-#[tauri::command]
-fn list_pinned_tags(app: AppHandle) -> Vec<window_runtime::PinnedTag> {
-    window_runtime::list_pinned_tags(app)
-}
-
-#[tauri::command]
-fn save_pinned_tag(app: AppHandle, name: String, color: String, files: Vec<String>) -> Result<(), String> {
-    window_runtime::save_pinned_tag(app, name, color, files)
-}
-
-#[tauri::command]
-fn remove_pinned_tag(app: AppHandle, name: String) -> Result<(), String> {
-    window_runtime::remove_pinned_tag(app, name)
-}
-
 /// Byte ranges of code regions — fenced code blocks and inline code spans —
 /// paired with CommonMark's rules. The regex alternation previously used for
 /// protection (```` ```.*?```|`.*?` ````) cannot express them: a fence closes
@@ -2092,16 +2005,6 @@ async fn watch_file(window: tauri::Window, handle: AppHandle, path: String) -> R
 }
 
 #[tauri::command]
-fn unwatch_file(window: tauri::Window, state: State<'_, WatcherState>) -> Result<(), String> {
-    window_runtime::unwatch_file(window, state)
-}
-
-#[tauri::command]
-fn send_markdown_path(state: State<'_, AppState>) -> Vec<String> {
-    window_runtime::send_markdown_path(state)
-}
-
-#[tauri::command]
 fn save_theme(app: AppHandle, theme: String) -> Result<(), String> {
     let config_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
     fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
@@ -2872,7 +2775,7 @@ pub fn run() {
             open_markdown,
             open_markdown_preview,
             render_markdown,
-            send_markdown_path,
+            window_runtime::send_markdown_path,
             read_file_content_checked,
             canonicalize_path,
             read_file_as_data_url,
@@ -2884,8 +2787,8 @@ pub fn run() {
             open_file_folder,
             rename_file,
             watch_file,
-            unwatch_file,
-            show_window,
+            window_runtime::unwatch_file,
+            window_runtime::show_window,
             save_theme,
             get_system_fonts,
             get_os_type,
@@ -2902,20 +2805,20 @@ pub fn run() {
             tab_transfer::complete_detached_tab,
             tab_transfer::cancel_detached_tab,
             create_transfer_window,
-            set_window_meta,
-            list_viewer_windows,
-            is_window_tag_taken,
-            offer_tab_to_window,
-            focus_window,
-            list_pinned_tags,
-            save_pinned_tag,
-            remove_pinned_tag,
-            save_window_state,
-            load_window_state,
-            clear_window_state,
-            save_restore_progress,
-            load_restore_progress,
-            clear_restore_progress
+            window_runtime::set_window_meta,
+            window_runtime::list_viewer_windows,
+            window_runtime::is_window_tag_taken,
+            window_runtime::offer_tab_to_window,
+            window_runtime::focus_window,
+            window_runtime::list_pinned_tags,
+            window_runtime::save_pinned_tag,
+            window_runtime::remove_pinned_tag,
+            window_runtime::save_window_state,
+            window_runtime::load_window_state,
+            window_runtime::clear_window_state,
+            window_runtime::save_restore_progress,
+            window_runtime::load_restore_progress,
+            window_runtime::clear_restore_progress
         ])
         .on_window_event(window_runtime::handle_window_event)
         .on_menu_event(|app, event| {
