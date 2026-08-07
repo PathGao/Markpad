@@ -218,10 +218,12 @@ fn remove_pinned_tag_at(lock: &Mutex<()>, path: &Path, name: String) -> Result<(
     })
 }
 
+#[tauri::command]
 pub fn list_pinned_tags(app: AppHandle) -> Vec<PinnedTag> {
     read_pinned_tags(&app)
 }
 
+#[tauri::command]
 pub fn save_pinned_tag(
     app: AppHandle,
     name: String,
@@ -233,12 +235,14 @@ pub fn save_pinned_tag(
     save_pinned_tag_at(&state.pinned_tags, &path, name, color, files)
 }
 
+#[tauri::command]
 pub fn remove_pinned_tag(app: AppHandle, name: String) -> Result<(), String> {
     let path = pinned_tags_path(&app)?;
     let state = app.state::<AppState>();
     remove_pinned_tag_at(&state.pinned_tags, &path, name)
 }
 
+#[tauri::command]
 pub fn set_window_meta(
     window: tauri::Window,
     state: State<'_, AppState>,
@@ -294,11 +298,13 @@ fn tag_held_by_another_window(
         .any(|(other, meta)| other != label && meta.tag_name.as_deref() == Some(name))
 }
 
+#[tauri::command]
 pub fn is_window_tag_taken(window: tauri::Window, state: State<'_, AppState>, name: String) -> bool {
     let registry = lock_recover(&state.window_registry);
     tag_held_by_another_window(&registry, window.label(), &name)
 }
 
+#[tauri::command]
 pub fn list_viewer_windows(state: State<'_, AppState>) -> Vec<WindowListEntry> {
     let registry = lock_recover(&state.window_registry);
     let mut list: Vec<WindowListEntry> = registry
@@ -312,6 +318,7 @@ pub fn list_viewer_windows(state: State<'_, AppState>) -> Vec<WindowListEntry> {
     list
 }
 
+#[tauri::command]
 pub fn offer_tab_to_window(
     app: AppHandle,
     broker: State<'_, crate::tab_transfer::TabTransferBroker>,
@@ -326,6 +333,7 @@ pub fn offer_tab_to_window(
         .map_err(|error| error.to_string())
 }
 
+#[tauri::command]
 pub fn focus_window(app: AppHandle, label: String) -> Result<(), String> {
     let window = app
         .get_webview_window(&label)
@@ -334,6 +342,7 @@ pub fn focus_window(app: AppHandle, label: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
 pub async fn show_window(window: tauri::Window) {
     let _ = window.show();
     let _ = window.unminimize();
@@ -355,14 +364,17 @@ fn window_state_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
 /// next launch restores no tabs at all. `atomic_write` publishes the new
 /// snapshot with a rename: the file on disk is either entirely the old
 /// session or entirely the new one.
+#[tauri::command]
 pub fn save_window_state(app: AppHandle, json: String) -> Result<(), String> {
     crate::atomic_write(&window_state_path(&app)?, json.as_bytes()).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
 pub fn load_window_state(app: AppHandle) -> Option<String> {
     fs::read_to_string(window_state_path(&app).ok()?).ok()
 }
 
+#[tauri::command]
 pub fn clear_window_state(app: AppHandle) -> Result<(), String> {
     let path = window_state_path(&app)?;
     if path.exists() {
@@ -421,14 +433,17 @@ fn write_restore_progress(path: &Path, json: &str) -> std::io::Result<()> {
     Ok(())
 }
 
+#[tauri::command]
 pub fn save_restore_progress(app: AppHandle, json: String) -> Result<(), String> {
     write_restore_progress(&restore_progress_path(&app)?, &json).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
 pub fn load_restore_progress(app: AppHandle) -> Option<String> {
     fs::read_to_string(restore_progress_path(&app).ok()?).ok()
 }
 
+#[tauri::command]
 pub fn clear_restore_progress(app: AppHandle) -> Result<(), String> {
     let path = restore_progress_path(&app)?;
     if path.exists() {
@@ -552,11 +567,13 @@ pub fn watch_file(
     Ok(())
 }
 
+#[tauri::command]
 pub fn unwatch_file(window: tauri::Window, state: State<'_, WatcherState>) -> Result<(), String> {
     lock_recover(&state.watchers).remove(window.label());
     Ok(())
 }
 
+#[tauri::command]
 pub fn send_markdown_path(state: State<'_, AppState>) -> Vec<String> {
     let mut files: Vec<String> = std::env::args()
         .skip(1)
