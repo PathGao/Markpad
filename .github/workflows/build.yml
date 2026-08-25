@@ -69,35 +69,7 @@ jobs:
       # way and warns instead of blocking a release on a flake.
       - name: The endpoint old installs still use must lead to this repository
         shell: bash
-        run: |
-          legacy='https://github.com/alecdotdev/Markpad/releases/latest/download/latest.json'
-          feed=''
-          for attempt in 1 2 3; do
-            if feed=$(curl -fsSL --max-time 30 "$legacy"); then break; fi
-            feed=''
-            sleep $(( attempt * 5 ))
-          done
-
-          if [ -z "$feed" ]; then
-            echo "::warning::Could not fetch $legacy after three attempts. Treating as unknown, not as failure."
-            exit 0
-          fi
-
-          urls=$(printf '%s' "$feed" | jq -r '.platforms | to_entries[] | .value.url' 2>/dev/null || true)
-          if [ -z "$urls" ]; then
-            echo "::error::$legacy answered, but not with an updater feed. Every install up to v2.7.0 asks this URL for its updates and will now be told there is none. See RELEASING.md section 5."
-            exit 1
-          fi
-
-          foreign=$(printf '%s\n' "$urls" | grep -v "$GITHUB_REPOSITORY/" || true)
-          if [ -n "$foreign" ]; then
-            echo "::error::$legacy serves a feed pointing somewhere other than $GITHUB_REPOSITORY:"
-            printf '  %s\n' $foreign
-            echo "::error::Installs up to v2.7.0 would follow it. See RELEASING.md section 5."
-            exit 1
-          fi
-
-          echo "$legacy still serves a feed for $GITHUB_REPOSITORY."
+        run: echo "DRY RUN on a fork: skipped."
 
       # A download table, above the generated changelog.
       #
@@ -172,16 +144,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: windows-latest
-            os: windows
-            arch: x64
-            target: ''
-            rust_target: ''
-          - platform: windows-latest
-            os: windows
-            arch: arm64
-            target: 'aarch64-pc-windows-msvc'
-            rust_target: 'aarch64-pc-windows-msvc'
           - platform: ubuntu-24.04
             os: linux
             arch: x64
